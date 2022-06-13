@@ -59,8 +59,7 @@ jobs:
       - persist_to_workspace:
           root: .
           paths:
-            - dist
-
+            - build
   deploy:
     machine: true
 
@@ -74,9 +73,9 @@ jobs:
           command: |
               set -e
               remote=$(git config remote.origin.url)
-              if [ ! -d "dist" ]
+              if [ ! -d "build" ]
               then
-                  echo "dist folder not found"
+                  echo "build folder not found"
                   exit 1
               fi
               mkdir gh-pages-branch
@@ -92,7 +91,7 @@ jobs:
               else
                   git checkout --orphan gh-pages
               fi
-              cp -a "../dist/." .
+              cp -a "../build/." .
               git add -A
               git commit --allow-empty -m "Deploy to GitHub pages [ci skip]"
               git push --force --quiet origin gh-pages > /dev/null 2>&1
