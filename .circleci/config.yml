@@ -66,7 +66,6 @@ jobs:
           name: Deploy to GitHub Pages
           command: |
               set -e
-              remote=$(git config remote.origin.url)
               if [ ! -d "build" ]
               then
                   echo "build folder not found"
@@ -77,7 +76,7 @@ jobs:
               git config --global user.email "$GH_EMAIL" > /dev/null 2>&1
               git config --global user.name "$GH_NAME" > /dev/null 2>&1
               git init
-              git remote add --fetch origin "$remote"
+              git remote add --fetch origin https://${GH_TOKEN}@github.com/vicentelyrio/corre-corre-menininha.git
               if git rev-parse --verify origin/gh-pages > /dev/null 2>&1
               then
                   git checkout gh-pages
