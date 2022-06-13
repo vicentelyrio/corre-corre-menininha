@@ -94,14 +94,33 @@ jobs:
       - run:
           name: Deploy build to GitHub Pages
           command: |
-              git config credential.helper 'cache --timeout=120'
-              git config user.email "vicentelyrio@gmail.com"
-              git config user.name "vicentelyrio"
-              git commit --allow-empty -m "Page release ${CIRCLE_BUILD_NUM} from ${CIRCLE_BRANCH}"
-              # Push quietly to prevent showing the token in log
-              git push -q --force https://${GH_TOKEN}@github.com/vicentelyrio/corre-corre-menininha.git ${CIRCLE_BRANCH}:gh-pages
-              git tag -a "release_${CIRCLE_BRANCH}_${CIRCLE_BUILD_NUM}" -m "Release based on build ${CIRCLE_BUILD_NUM}"
-              git push -q --tags https://${GH_TOKEN}@github.com/vicentelyrio/corre-corre-menininha.git
+              set -e
+              remote=$(git config remote.origin.url)
+              if [ ! -d "build" ]
+              then
+                  echo "build folder not found"
+                  exit 1
+              fi
+              mkdir gh-pages-branch
+              cd gh-pages-branch
+              git config --global user.email "$GH_EMAIL" > /dev/null 2>&1
+              git config --global user.name "$GH_NAME" > /dev/null 2>&1
+              git init
+              git remote add --fetch origin "$remote"
+              if git rev-parse --verify origin/gh-pages > /dev/null 2>&1
+              then
+                  git checkout gh-pages
+                  git rm -rf .
+              else
+                  git checkout --orphan gh-pages
+              fi
+              cp -a "../build/." .
+              git add -A
+              git commit --allow-empty -m "Deploy to GitHub pages [ci skip]"
+              git push --force --quiet origin gh-pages > /dev/null 2>&1
+              cd ..
+              rm -rf gh-pages-branch
+              echo "Finished GitHub pages Deployment!"
 workflows:
   version: 2
   build-and-deploy:
