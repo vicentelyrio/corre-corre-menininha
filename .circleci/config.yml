@@ -49,13 +49,13 @@ jobs:
             - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
-            - v1-bundle-{{ checksum "yarn.lock" }}
+            - v1-dependencies-{{ checksum "package.json" }}
       - run:
           name: install builder
           command : |
             yarn
       - save_cache:
-          key: v1-bundle-{{ checksum "yarn.lock" }}
+          key: v1-dependencies-{{ checksum "package.json" }}
           paths:
             - ~/repo/node_modules
 
@@ -71,7 +71,7 @@ jobs:
             - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
-            - v1-bundle-{{ checksum "yarn.lock" }}
+            - v1-dependencies-{{ checksum "package.json" }}
       - run: 
           name: Link Bundle Path
           command : |
@@ -79,7 +79,7 @@ jobs:
       - save_cache:
           key: v1-assets-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-            - ~/repo
+            - ~/repo/dist
 
   deploy:
     machine: true
