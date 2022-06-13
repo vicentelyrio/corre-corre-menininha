@@ -60,7 +60,6 @@ jobs:
           root: .
           paths:
             - build
-
   deploy:
     machine: true
 
