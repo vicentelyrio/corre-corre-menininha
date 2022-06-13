@@ -32,32 +32,18 @@ jobs:
 
     steps:
       - checkout
+      - restore_cache:
+          keys:
+          - v1-dependencies-{{ checksum "package.json" }}
+      - run: yarn
       - save_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-            - ~/repo
-
-  bundle_dependencies:
-    docker:
-      - image: circleci/node
-
-    working_directory: ~/repo
-
-    steps:
-      - restore_cache:
-          keys:
-            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-      - run:
-          name: install builder
-          command : |
-            yarn
-      - save_cache:
+            - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
+      - persist_to_workspace:
+          root: .
           paths:
-            - ~/repo/node_modules
+            - node_modules
 
   precompile:
     docker:
@@ -66,20 +52,14 @@ jobs:
     working_directory: ~/repo
 
     steps:
-      - restore_cache:
-          keys:
-            - v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "package.json" }}
-      - run: 
-          name: Link Bundle Path
-          command : |
-            yarn build
-      - save_cache:
-          key: v1-assets-{{ .Environment.CIRCLE_SHA1 }}
+      - checkout
+      - attach_workspace:
+          at: .
+      - run: yarn build
+      - persist_to_workspace:
+          root: .
           paths:
-            - ~/repo
+            - dist
 
   deploy:
     machine: true
@@ -87,12 +67,10 @@ jobs:
     working_directory: ~/repo
 
     steps:
-      - restore_cache:
-          keys:
-            - v1-assets-{{ .Environment.CIRCLE_SHA1 }}
-      - run: echo ${CIRCLE_BRANCH}
-      - run:
-          name: Deploy build to GitHub Pages
+      - attach_workspace:
+          at: .
+      - deploy:
+          name: Deploy to GitHub Pages
           command: |
               set -e
               remote=$(git config remote.origin.url)
@@ -130,12 +108,9 @@ workflows:
             branches:
               ignore:
                 - gh-pages
-      - bundle_dependencies:
-          requires:
-            - checkout_code
       - precompile:
           requires:
-            - bundle_dependencies
+            - checkout_code
       - deploy:
           requires:
             - precompile
