@@ -6,6 +6,9 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
     "test": "echo \"Error: no test specified\" && exit 0",
     "test:ci": "yarn test",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx ./",
@@ -25,7 +28,8 @@
     "eslint": "^8.17.0",
     "husky": "^8.0.0",
     "lint-staged": "^13.0.1",
-    "semantic-release": "^19.0.3"
+    "semantic-release": "^19.0.3",
+    "vite": "^2.9.9"
   },
   "config": {
     "commitizen": {
@@ -36,5 +40,8 @@
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix"
     ]
+  },
+  "resolutions": {
+    "minimist": "^1.2.6"
   }
 }
