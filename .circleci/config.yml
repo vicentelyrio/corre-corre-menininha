@@ -79,7 +79,7 @@ jobs:
       - save_cache:
           key: v1-assets-{{ .Environment.CIRCLE_SHA1 }}
           paths:
-            - ~/repo/dist
+            - ~/repo
 
   deploy:
     machine: true
