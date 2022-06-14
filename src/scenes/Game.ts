@@ -2,30 +2,17 @@ import Phaser from 'phaser'
 import { createWorld } from 'bitecs'
 import type { IWorld, System } from 'bitecs'
 
-// import Position from '/components/Position'
-// import Velocity from '/components/Velocity'
-// import Sprite from '/components/Sprite'
-// import Rotation from '/components/Rotation'
-// import Player from '/components/Player'
-// import CPU from '/components/CPU'
-// import Input from '/components/Input'
-
 import createMovementSystem from '/systems/movement'
 import createSpriteSystem from '/systems/sprite'
 import createPlayerSystem from '/systems/player'
 import createCPUSystem from '/systems/cpu'
 
-import { Girl } from '/entities/Girl'
-
-interface Entity {
-  create: (world: IWorld) => void,
-  preload: (load: Phaser.Loader.LoaderPlugin) => void,
-}
+import { Girl, IGirl } from '/entities/Girl'
 
 export default class Game extends Phaser.Scene {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys
   private world!: IWorld
-  private player!: Entity
+  private player!: IGirl
 
   // Systems
   private playerSystem!: System
@@ -39,36 +26,18 @@ export default class Game extends Phaser.Scene {
 
   init() {
     this.cursors = this.input.keyboard.createCursorKeys()
-    this.player = Girl()
+    this.player = new Girl(this)
   }
 
   preload() {
-    // this.load.image('tank-blue', '/assets/tank_blue.png')
-    // this.load.image('tank-green', '/assets/tank_green.png')
-    // this.load.image('tank-red', '/assets/tank_red.png')
     this.player.preload(this.load)
   }
 
   create() {
-    // const { width, height } = this.scale
-
     this.world = createWorld()
     this.player.create(this.world)
-
-    // // create the player tank
-    // const blueTank = addEntity(this.world)
-
-    // addComponent(this.world, Position, blueTank)
-    // addComponent(this.world, Velocity, blueTank)
-    // addComponent(this.world, Rotation, blueTank)
-    // addComponent(this.world, Sprite, blueTank)
-    // addComponent(this.world, Player, blueTank)
-    // addComponent(this.world, Input, blueTank)
-
-    // Position.x[blueTank] = 100
-    // Position.y[blueTank] = 100
-    // Sprite.texture[blueTank] = Textures.TankBlue
-    // Input.speed[blueTank] = 10
+    
+    // const { width, height } = this.scale
 
     // // create random cpu tanks
     // for (let i = 0; i < 10; ++i) {
@@ -95,7 +64,7 @@ export default class Game extends Phaser.Scene {
     this.playerSystem = createPlayerSystem(this.cursors)
     this.cpuSystem = createCPUSystem(this)
     this.movementSystem = createMovementSystem()
-    this.spriteSystem = createSpriteSystem(this, ['tank-blue', 'tank-green', 'tank-red'])
+    this.spriteSystem = createSpriteSystem(this, [...this.player.sprites])
   }
 
   update() {
