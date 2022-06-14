@@ -6,8 +6,9 @@ import '/styles.css'
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
+  width: window.innerWidth,
+  height: window.innerHeight,
+  
   physics: {
     default: 'arcade',
     arcade: {
