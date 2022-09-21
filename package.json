@@ -29,7 +29,7 @@
     "husky": "^8.0.0",
     "lint-staged": "^13.0.1",
     "semantic-release": "^19.0.3",
-    "vite": "^2.9.9"
+    "vite": "^2.9.13"
   },
   "config": {
     "commitizen": {
